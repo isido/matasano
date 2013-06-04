@@ -8,13 +8,17 @@ import (
 	"fmt"
 )
 
-func hexToBase64(hex string) string {
+func HexToBase64(hex string) string {
 	return hex
 //	return base64.EncodeToString(hex)
 }
 
 
-func base64ToHex(s string) []byte {
+func Base64ToHex(s string) string {
+	return s
+}
+
+func base64ToBytes(s string) []byte {
 	bytes, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		fmt.Println("error: ", err)
