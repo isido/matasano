@@ -3,9 +3,14 @@
 package matasano
 
 import (
-	//	"bytes"
+	"bytes"
+	"encoding/hex"
 	"testing"
 )
+
+//
+// tests for task 1
+//
 
 var encodingTests = []struct {
 	hex string
@@ -34,16 +39,37 @@ func TestBase64ToHex(t *testing.T) {
 	}
 }
 
-/*
+//
+// tests for task 2
+//
 
-func TestBase64ToHex(t *testing.T) {
+var fixedXORTests = []struct {
+	a   string
+	b   string
+	res string
+}{
+	{"1c0111001f010100061a024b53535009181c",
+		"686974207468652062756c6c277320657965",
+		"746865206b696420646f6e277420706c6179"},
+	{"ffff",
+		"ffff",
+		"0000"},
+}
 
-	const in = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
-	const out = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
-	var out_b = []byte(out)
-
-	if x := base64ToHex(in); !bytes.Equal(x, out_b) {
-		t.Errorf("Base64ToHex(%v) = %v, want %v", in, x, out_b)
+func TestFixedXOR(t *testing.T) {
+	for _, tt := range fixedXORTests {
+		a, _ := hex.DecodeString(tt.a)
+		b, _ := hex.DecodeString(tt.b)
+		r, _ := hex.DecodeString(tt.res)
+		res := FixedXOR(a, b)
+		if !bytes.Equal(res, r) {
+			t.Errorf("FixedXOR(%v, %v) = %v, want %v", tt.a, tt.b, hex.EncodeToString(res), tt.res)
+		}
 	}
 }
-*/
+
+//
+// tests for task 3
+//
+
+var cipher = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
