@@ -7,14 +7,14 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"unicode/utf8"
 )
 
 // Convert hex string to base64 encoding
+// (Challenge 1)
 func HexToBase64(s string) string {
 	bytes, err := hex.DecodeString(s)
 	if err != nil {
-		fmt.Println("error: ", err)
+		fmt.Println("HexToBase64: error: ", err)
 		return ""
 	}
 	str := base64.StdEncoding.EncodeToString(bytes)
@@ -22,10 +22,11 @@ func HexToBase64(s string) string {
 }
 
 // Convert base64 encoded string to hex representation
+// (Challenge 1)
 func Base64ToHex(s string) string {
 	bytes, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
-		fmt.Println("error: ", err)
+		fmt.Println("Base64ToHex: error: ", err)
 		return ""
 	}
 	str := hex.EncodeToString(bytes)
@@ -33,9 +34,10 @@ func Base64ToHex(s string) string {
 }
 
 // XOR two byte slices
+// (Challenge 2)
 func FixedXOR(a, b []byte) []byte {
 	if len(a) != len(b) {
-		fmt.Println("Slices aren't the same length (%v != %v)", len(a), len(b))
+		fmt.Println("FixedXOR: Slices aren't the same length (%v != %v)", len(a), len(b))
 		return nil
 	}
 	res := make([]byte, len(a))
@@ -46,8 +48,7 @@ func FixedXOR(a, b []byte) []byte {
 }
 
 // expand one byte to l sized byte-slice
-func expandByte(b byte, l int) []byte {
-	
+func multiplyByte(b byte, l int) []byte {	
 	res := make([]byte, l)
 	for i := range res {
 		res[i] = b
@@ -55,45 +56,26 @@ func expandByte(b byte, l int) []byte {
 	return res
 }
 
-// convert rune to a byte, discard extra bytes
-func convertRune(c rune) byte {
-	l := utf8.RuneLen(c)
-	if l != 1 {
-		fmt.Println("Warning: discarding extra %d bytes in character", l - 1)
+// compute string histogram
+func CharacterHistogram(s string) map[rune]int {
+	hgrm := make(map[rune]int)
+	for _, c := range s {
+		val := hgrm[c]
+		hgrm[c] = val + 1
 	}
-	buf := make([]byte, l)
-	buf = c
-	return buf[0]
+/*		if val, ok := hgrm[c]; ok {
+			hgrm[c] = val + 1
+		}
+*/		
+	return hgrm
 }
 
-// Decrypt ciphertext encrypted with single characeter XOR
-func SingleCharacterXORCipher(cipher, keyspace string) {
 
-	cipherBytes, err := hex.DecodeString(cipher)
-
-	if err != nil {
-		fmt.Println("error: ", err)
-		return
-	}
-	cipherLen := len(cipherBytes)
-
-	// loop over letters and compute character histogram for decrypted text
-	for _, c := range keyspace {
-		// multiply the key
-		b := convertRune(c) 
-		key := expandByte(b, cipherLen)
-		res := FixedXOR(cipherBytes, key)
-		
-	}
-
-	// sort histograms accoring to distance to the target histogram
-}
-
-// 
+// Challenge 3
 func Solve3() {
-	cipher := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-	keyspace := "abcdefghijklmnopqrtstuvwxyzABCDEFGHIJKLMNOPQRSTUVWZYX"
-
+	cipherHex := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+	keyspace := []byte("abcdefghijklmnopqrtstuvwxyzABCDEFGHIJKLMNOPQRSTUVWZYX")
+/*
 	englishLetterFrequency := map[string]float64 {
 		"e" : 12.02,
 		"t" : 9.10,
@@ -122,7 +104,24 @@ func Solve3() {
 		"j" : 0.10,
 		"z" : 0.07, 
 	}
+*/
+	cipher, err := hex.DecodeString(cipherHex)
 
+	if err != nil {
+		fmt.Println("Solve3: error: ", err)
+		return
+	}
 
-	SingleCharacterXORCipher(cipher, keyspace)
+	if err != nil {
+		fmt.Println("Solve3: error: ", err)
+		return
+	}
+
+	l := len(cipher)
+
+	for _, b := range keyspace {
+		key := multiplyByte(b, l)
+		res := FixedXOR(cipher, key)
+		fmt.Println(string(res))
+	}
 }
