@@ -11,26 +11,18 @@ import (
 
 // Convert hex string to base64 encoding
 // (Challenge 1)
-func HexToBase64(s string) string {
+func HexToBase64(s string) (string, error) {
 	bytes, err := hex.DecodeString(s)
-	if err != nil {
-		fmt.Println("HexToBase64: error: ", err)
-		return ""
-	}
 	str := base64.StdEncoding.EncodeToString(bytes)
-	return str
+	return str, err
 }
 
 // Convert base64 encoded string to hex representation
 // (Challenge 1)
-func Base64ToHex(s string) string {
+func Base64ToHex(s string) (string, error) {
 	bytes, err := base64.StdEncoding.DecodeString(s)
-	if err != nil {
-		fmt.Println("Base64ToHex: error: ", err)
-		return ""
-	}
 	str := hex.EncodeToString(bytes)
-	return str
+	return str, err
 }
 
 // XOR two byte slices
@@ -48,7 +40,7 @@ func FixedXOR(a, b []byte) []byte {
 }
 
 // expand one byte to l sized byte-slice
-func multiplyByte(b byte, l int) []byte {	
+func multiplyByte(b byte, l int) []byte {
 	res := make([]byte, l)
 	for i := range res {
 		res[i] = b
@@ -56,55 +48,80 @@ func multiplyByte(b byte, l int) []byte {
 	return res
 }
 
-// compute string histogram
-func CharacterHistogram(s string) map[rune]int {
-	hgrm := make(map[rune]int)
+// types for character histograms and dissimilarity matrix
+type CharacterHistogram map[rune]float64
+type CharacterCount map[rune]int
+type CharacterDissimilarityMatrix map[rune]map[rune]float64
+
+// count different characters in a string
+func NewCountCharacters(s string) CharacterCount {
+	hgrm := make(CharacterCount)
 	for _, c := range s {
 		val := hgrm[c]
 		hgrm[c] = val + 1
 	}
-/*		if val, ok := hgrm[c]; ok {
-			hgrm[c] = val + 1
-		}
-*/		
 	return hgrm
 }
 
+// make character histogram from a character count
+func NewCharacterHistogram(hgrm CharacterCount) CharacterHistogram {
+	occ := 0
+	for c := range hgrm {
+		occ = occ + hgrm[c]
+	}
+	norm := make(CharacterHistogram)
+	for c := range hgrm {
+		norm[c] = float64(hgrm[c]) / float64(occ)
+	}
+	return norm
+}
+
+// compute dissimilarity matrix between two character histograms
+func NewCharacterDissimilarityMatrix(a, b CharacterHistogram) CharacterDissimilarityMatrix {
+	diss := make(CharacterDissimilarityMatrix)
+	for aa := range a {
+		for bb := range b {
+			diss[aa][bb] = 0
+		}
+	}
+
+	return diss		
+}
 
 // Challenge 3
 func Solve3() {
 	cipherHex := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	keyspace := []byte("abcdefghijklmnopqrtstuvwxyzABCDEFGHIJKLMNOPQRSTUVWZYX")
-/*
-	englishLetterFrequency := map[string]float64 {
-		"e" : 12.02,
-		"t" : 9.10,
-		"a" : 8.12,
-		"o" : 7.68,
-		"i" : 7.31,
-		"n" : 6.95,
-		"s" : 6.28,
-		"r" : 6.02,
-		"h" : 5.92,
-		"d" : 4.32,
-		"l" : 3.98,
-		"u" : 2.88,
-		"c" : 2.71,
-		"m" : 2.61,
-		"f" : 2.30,
-		"y" : 2.11,
-		"w" : 2.09,
-		"g" : 2.03,
-		"p" : 1.82,
-		"b" : 1.49,
-		"v" : 1.11,
-		"k" : 0.69,
-		"x" : 0.17,
-		"q" : 0.11,
-		"j" : 0.10,
-		"z" : 0.07, 
-	}
-*/
+	/*
+		englishLetterFrequency := map[string]float64 {
+			"e" : 12.02,
+			"t" : 9.10,
+			"a" : 8.12,
+			"o" : 7.68,
+			"i" : 7.31,
+			"n" : 6.95,
+			"s" : 6.28,
+			"r" : 6.02,
+			"h" : 5.92,
+			"d" : 4.32,
+			"l" : 3.98,
+			"u" : 2.88,
+			"c" : 2.71,
+			"m" : 2.61,
+			"f" : 2.30,
+			"y" : 2.11,
+			"w" : 2.09,
+			"g" : 2.03,
+			"p" : 1.82,
+			"b" : 1.49,
+			"v" : 1.11,
+			"k" : 0.69,
+			"x" : 0.17,
+			"q" : 0.11,
+			"j" : 0.10,
+			"z" : 0.07,
+		}
+	*/
 	cipher, err := hex.DecodeString(cipherHex)
 
 	if err != nil {
