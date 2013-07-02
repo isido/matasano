@@ -11,12 +11,12 @@ object Tools {
     new String(Base64.encodeBase64(bytes))
   
   def decodeBase64(str: String): Array[Byte] = 
-    Base64.decodeBase64(str.getBytes)
+    Base64.decodeBase64(str.getBytes("UTF-8"))
 
   def encodeHex(bytes: Array[Byte]): String =
-    Hex.encodeHex(bytes).mkString
+    Hex.encodeHexString(bytes)
 
   def decodeHex(str: String): Array[Byte] =
-    str.getBytes //Hex.decodeHex(str.getBytes)
+    Hex.decodeHex(str.toLowerCase.toArray.map(i => i))
 
 }
