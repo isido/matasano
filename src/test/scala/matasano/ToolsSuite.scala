@@ -1,7 +1,7 @@
 package matasano
 
 import org.scalatest.FunSuite
-import org.scalatest.prop.TableDrivenPropertyChecks._
+
 
 class ToolsSuite extends FunSuite {
 
@@ -21,7 +21,6 @@ class ToolsSuite extends FunSuite {
 
   val hexAndBase64 = 
     Array(
-      ("a", "YQ=="),
       ( "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d",
         "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"),
       ("", "")
@@ -32,7 +31,7 @@ class ToolsSuite extends FunSuite {
       ("", ""),
       ("a", "YQ=="),
       ("A ", "QSA="),
-      ("any carnal pleasure", "YW55IGNhcm5hbCBwbGVhc3VyZS4="),
+      ("any carnal pleasure.", "YW55IGNhcm5hbCBwbGVhc3VyZS4="),
       ("any carnal pleasure", "YW55IGNhcm5hbCBwbGVhc3VyZQ=="),
       ("any carnal pleasur", "YW55IGNhcm5hbCBwbGVhc3Vy"),
       ("any carnal pleasu", "YW55IGNhcm5hbCBwbGVhc3U="),
@@ -53,20 +52,20 @@ class ToolsSuite extends FunSuite {
 
   test("encoding bytes to hex") {
     for ((hex, bytes) <- hexAndBytes)
-      assert(Tools.encodeHex(bytes) === hex)
+      assert(Tools.encodeHex(bytes) === hex.toLowerCase)
   }
 
-  ignore("decoding and encoding hex") {
+  test("decoding and encoding hex") {
     for ((hex, _) <- hexAndBytes)
-      assert(Tools.encodeHex(Tools.decodeHex(hex)) === hex)
+      assert(Tools.encodeHex(Tools.decodeHex(hex)) === hex.toLowerCase)
   }
 
-  ignore("encoding and decoding bytes") {
+  test("encoding and decoding bytes") {
     for ((_, bytes) <- hexAndBytes)
       assert(Tools.decodeHex(Tools.encodeHex(bytes)) === bytes)
   }
 
-  ignore("decoding hex and encoding it to base64") {
+  test("decoding hex and encoding it to base64") {
     for ((hex, base64) <- hexAndBase64)
       assert(Tools.encodeBase64(Tools.decodeHex(hex)) === base64)
   }
@@ -81,15 +80,14 @@ class ToolsSuite extends FunSuite {
       assert(Tools.decodeBase64(base64) === bytes)
   }
 
-
-  ignore("encoding string to base64") {
+  test("encoding string to base64") {
     for ((str, base64) <- stringAndBase64)
-      assert(Tools.encodeBase64(str.getBytes) === base64)
+      assert(Tools.encodeBase64(str.getBytes("UTF-8")) === base64)
   }
 
-  ignore("decoding base64 to string") {
+  test("decoding base64 to string") {
     for ((str, base64) <- stringAndBase64)
-      assert(Tools.decodeBase64(base64).mkString === str)
+      assert(new String(Tools.decodeBase64(base64), "UTF-8") === str)
   }
 
 }

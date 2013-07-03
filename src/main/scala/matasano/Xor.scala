@@ -1,8 +1,8 @@
 package matasano
 
-object Xor {
+object XOR {
 
-  def FixedXor(a: Array[Int], b: Array[Int]): Array[Int] =
+  def FixedXOR(a: Array[Int], b: Array[Int]): Array[Int] =
     (a, b).zipped map (_ ^ _) // why does this not work with Bytes?
 
 }
