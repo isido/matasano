@@ -1,8 +1,10 @@
 package matasano
 
+import Math.pow
+
 object CharacterHistogram {
 
-  val english = Map[Char, Double](
+  val english = Map[Char, Double] (
     'e' -> 12.02,
     't' -> 9.10,
     'a' -> 8.12,
@@ -32,6 +34,34 @@ object CharacterHistogram {
   )
 
   def characterCount(s: String): Map[Char, Int] = 
-    s.foldLeft(Map[Char, Int]() withDefaultValue 0){(hist, ch) => hist.updated(ch, hist(ch) + 1)}
+    s.foldLeft(Map[Char, Int]() withDefaultValue 0)((hist, ch) => hist.updated(ch, hist(ch) + 1))
+
+  def normalizeCount(m: Map[Char, Int], c: Int): Map[Char, Double] =
+    m map { case(ch, v) => (ch -> v * 100.0 / c) }
+
+  def makeCharacterHistogram(s: String): Map[Char, Double] =
+    normalizeCount(characterCount(s), s.length)
+
+  abstract class Metric {
+    // http://docs.opencv.org/doc/tutorials/imgproc/histograms/histogram_comparison/histogram_comparison.html
+    def distance(a: Map[Char, Double], b: Map[Char, Double]): Double
+  }
+
+  trait Correlation extends Metric {
+    def distance(a: Map[Char, Double], b: Map[Char, Double]): Double = 0
+  }
+
+  trait ChiSquare extends Metric {
+    def distance(a: Map[Char, Double], b: Map[Char, Double]): Double = 
+      a.foldLeft(0.0){ case (acc, (ch, v)) => acc + (pow(v - b(ch), 2) / v) }      
+  }
+
+  trait Intersection extends Metric {
+    def distance(a: Map[Char, Double], b: Map[Char, Double]): Double = 0
+  }
+
+  trait Bhattacharyya extends Metric {
+    def distance(a: Map[Char, Double], b: Map[Char, Double]): Double = 0
+  }
 
 }
