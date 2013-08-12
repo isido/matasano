@@ -1,5 +1,7 @@
 package matasano
 
+import scala.io.Source
+
 import CharacterHistogram._
 
 object Challenges {
@@ -11,14 +13,15 @@ object Challenges {
     val keyRange = ('a' to 'z') ++ ('A' to 'Z')
     val candidates = keyRange map ( k => new String(XOR.SingleCharacterXOR(Tools.decodeHex(cipherText), k.toByte), "UTF-8"))
     val distances = candidates map ( txt => (txt, new CharacterHistogramChiSquare(txt).dist(CharacterHistogram.english)))
-    distances.sortBy(_._2)
+    distances.sortBy(_._2).head
   }
 
   // Challenge 4: Detect single-character XOR
 
   def detectSingleCharacterXOR = {
     val filename = "single-character-xor.txt"
-
+    val candidates = Source.fromURL(getClass.getResource("/" + filename)).getLines
+    val keyRange = ('a' to 'z') ++ ('A' to 'Z')
   }
 
 }
