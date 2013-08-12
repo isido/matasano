@@ -41,8 +41,12 @@ class XORSuite extends FunSuite {
     for ((x, c, res) <- SingleCharacterCharXORs)
       assert(XOR.SingleCharacterXOR(x, c) === res)
   }
+  test("RepeatKey (bytes)") {
+    assert(XOR.RepeatKey(Array[Byte](1,2,3,4,5), Array[Byte](1)) === Array[Byte](1,1,1,1,1))
+    assert(XOR.RepeatKey(Array[Byte](1,2,3,4,5), Array[Byte](1,2)) === Array[Byte](1,2,1,2,1))
+  }
 
-  test("RepeatKey") {
+  test("RepeatKey (strings)") {
     assert(XOR.RepeatKey("abcde", "a") === "aaaaa")
     assert(XOR.RepeatKey("abcde", "ab") === "ababa")
   }
