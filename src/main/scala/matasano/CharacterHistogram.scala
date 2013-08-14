@@ -1,17 +1,5 @@
 package matasano
 
-class CharacterHistogram(str: String) {
-  val hist = CharacterHistogram.normalizeCount(CharacterHistogram.characterCount(str), str.length)
-}
-
-class CharacterHistogramDummy(str: String) extends CharacterHistogram(str) with Dummy[Char] {
-  def dist(o: Map[Char, Double]) = distance(this.hist, o)
-}
-
-class CharacterHistogramChiSquare(str: String) extends CharacterHistogram(str) with ChiSquare[Char] {
-  def dist(o: Map[Char, Double]) = distance(this.hist, o)
-}
-
 object CharacterHistogram {
 
   val english = Map[Char, Double] (
@@ -43,13 +31,22 @@ object CharacterHistogram {
     'z' -> 0.07
   )
 
+  /**
+    * Count characters in given string, results are stored in a map
+    */
   def characterCount(s: String): Map[Char, Int] = 
     s.foldLeft(Map[Char, Int]() withDefaultValue 0)((hist, ch) => hist.updated(ch, hist(ch) + 1))
 
+  /**
+    * Normalize character count between 0-100
+    */
   def normalizeCount(m: Map[Char, Int], c: Int): Map[Char, Double] =
     m map { case(ch, v) => (ch -> v * 100.0 / c) }
 
-  def makeCharacterHistogram(s: String): Map[Char, Double] =
+  /**
+    * Make normalized character histogram map
+    */
+  def makeCharacterHistogramMap(s: String): Map[Char, Double] =
     normalizeCount(characterCount(s), s.length)
 
 }
