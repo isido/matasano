@@ -51,6 +51,13 @@ object XOR {
   def repeatingKeyXOR(a: String, key: String): Array[Byte] =
     fixedXOR(a.getBytes, repeatKey(a, key).getBytes)
 
+  /**
+    * Create plaintext candidates
+    * ciphertext is hex string
+    */
+  def xorPlaintextCandidates(ciphertext: String, keys: List[Char]) = {
+    keys map ( k => new String(singleCharacterXOR(Tools.decodeHex(ciphertext), k.toByte), "UTF-8"))
+  }
 
   def breakSingleCharacterXOR(ciphertext: String, keyspace: String, metric: Metric[Char]): (String, Double) = {
     import CharacterHistogram._
