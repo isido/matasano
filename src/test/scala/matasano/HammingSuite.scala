@@ -7,7 +7,10 @@ class HammingSuite extends FunSuite {
   val hammings = Array(
     ("this is a test",
       "wokka wokka!!!",
-      37)
+      37),
+    ("the same string",
+      "the same string",
+      0)
   )
 
   test("Hamming distance") {
