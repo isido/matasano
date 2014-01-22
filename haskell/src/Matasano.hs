@@ -20,3 +20,6 @@ base64ToHex b64Str = case Data.ByteString.Base64.decode b64Str of
                          Right str -> Data.ByteString.Base16.encode str
 
 
+-- Challenge 2
+fixedXOR :: ByteString -> ByteString -> ByteString
+fixedXOR a b = a
