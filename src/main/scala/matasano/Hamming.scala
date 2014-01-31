@@ -13,7 +13,7 @@ object Hamming {
   }
 
   /**
-    * Count number of differing bits in two byts
+    * Count number of differing bits in two bytes
     */
   def differingBits(a: Byte, b: Byte) = bits (a ^ b)
 
