@@ -65,7 +65,7 @@ class ToolsSuite extends FunSuite {
       assert(Tools.decodeHex(Tools.encodeHex(bytes)) === bytes)
   }
 
-  test("decoding hex and encoding it to base64") {
+  test("decoding hex and encoding it to base64 (Challenge #2)") {
     for ((hex, base64) <- hexAndBase64)
       assert(Tools.encodeBase64(Tools.decodeHex(hex)) === base64)
   }
