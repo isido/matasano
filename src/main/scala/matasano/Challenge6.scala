@@ -59,19 +59,21 @@ object Challenge6 {
     // so on.
 
     // drop last block, if the division is not even
-    val tr = 
+
+    val transposed = 
       if (blocks.last.length != k)
-        blocks.take(blocks.length - 1).transpose
+        blocks.take(blocks.length - 1).transpose // this is deprecated, find latest method
       else
         blocks.transpose
 
     // g. Solve each block as if it was single-character XOR. You already
     // have code to do this.
 
+    import CharacterHistogram._
+    val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
 
-    //val 
-    //
-    //tr.map( e => XOR.breakSingleCharacterXOR(e, 
+//    val keyChars = transposed map (block => XOR.findSingleCharacterXORkey(block, keyCandidates, new ChiSquare[Char]))
+
 
     // e. For each block, the single-byte XOR key that produces the best
     // looking histogram is the repeating-key XOR key byte for that

@@ -20,14 +20,14 @@ object Challenge4 {
   def main(args: Array[String]) = {
 
     // assume keys are ASCII letters
-    val keyRange = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
+    val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
 
 
     val filename = "single-character-xor.txt" // the contents of url are copied here
     val cipherTexts = Source.fromURL(getClass.getResource("/" + filename)).getLines
 
     val distances = cipherTexts map ( txt => XOR.breakSingleCharacterXOR(txt, 
-      keyRange, new ChiSquare[Char]))
+      keyCandidates, new ChiSquare[Char]))
 
     val first = distances.toList.sortBy(_._2).head._1
 

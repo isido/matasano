@@ -25,9 +25,9 @@ object Challenge3 {
   def main(args: Array[String]) = {
 
     // assume keys are ASCII letters
-    val keyRange = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
+    val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
     val cipher = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    val plain = XOR.breakSingleCharacterXOR(cipher, keyRange, new ChiSquare[Char])
+    val plain = XOR.breakSingleCharacterXOR(cipher, keyCandidates, new ChiSquare[Char])
     val plain_str = plain._1
 
     println(plain_str)

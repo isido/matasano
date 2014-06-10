@@ -2,6 +2,8 @@ package matasano
 
 import org.scalatest.FunSuite
 
+import matasano.Conversions._
+
 class XORSuite extends FunSuite {
 
   val xors = 
@@ -18,7 +20,7 @@ class XORSuite extends FunSuite {
 
   test("FixedXOR hex string, result in string (Challenge #1)") {
     for ((x1, x2, res) <- xors)
-      assert(XOR.fixedXOR(x1, x2) === res)
+      assert(encodeHex(XOR.fixedXOR(x1, x2)) === res)
   }
 
   val singleCharacterXORs =
