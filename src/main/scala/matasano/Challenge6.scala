@@ -62,7 +62,7 @@ object Challenge6 {
 
     val transposed = 
       if (blocks.last.length != k)
-        blocks.take(blocks.length - 1).transpose // this is deprecated, find latest method
+        blocks.take(blocks.length - 1).transpose
       else
         blocks.transpose
 
@@ -72,7 +72,7 @@ object Challenge6 {
     import CharacterHistogram._
     val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
 
-//    val keyChars = transposed map (block => XOR.findSingleCharacterXORkey(block, keyCandidates, new ChiSquare[Char]))
+    //val keyChars = transposed map (block => XOR.findSingleCharacterXORkey(block, keyCandidates, new ChiSquare[Char]))
 
 
     // e. For each block, the single-byte XOR key that produces the best

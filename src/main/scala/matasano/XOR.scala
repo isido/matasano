@@ -31,34 +31,13 @@ object XOR {
     Stream.continually(key).flatten.take(a.length).toArray
 
   /**
-    * Repeat key string so that it is as long as a string.
-    * TODO: bytefy this!
+    * XOR byte array with repeated key
     */
-  def repeatKey(a: String, key: String): String =
-    (key * (1 + (a.length / key.length))).take(a.length)
+  def repeatingKey(a: Array[Byte], key: Array[Byte]) =
+    fixedXOR(a, repeatKey(a, key))
 
   /**
-    * XOR plain string with repeated key (also plain string)
-    * TODO: bytefy this!
-    */
-  def repeatingKeyXOR(a: String, key: String): Array[Byte] =
-    fixedXOR(a.getBytes, repeatKey(a, key).getBytes)
-
-  /**
-    * TODO: split functionality further so that these two don't repeat themselves so much,
-    * also use bytes instead of strings etc.
-    */
-  def findSingleCharacterXORkey(ciphertext: String, keyspace: String, metric: Metric[Char]): Char = {
-    import CharacterHistogram._
-
-    val candidates = keyspace map ( k => (k, new String(XOR.singleCharacterXOR(Tools.decodeHex(ciphertext), k.toByte), "UTF-8")))
-    val distances = candidates map ( e => (e._1, metric.distance(makeCharacterHistogramMap(e._2), english)))
-    distances.sortBy(_._2).head._1
-  }
-
-  /**
-    * TODO: split functionality further so that these two don't repeat themselves so much,
-    *  also use bytes instead of strings etc.
+    * TODO: split functionality, also use bytes instead of strings etc.
     */
   def breakSingleCharacterXOR(ciphertext: String, keyspace: String, metric: Metric[Char]): (String, Double) = {
     import CharacterHistogram._
@@ -67,4 +46,11 @@ object XOR {
     val distances = candidates map ( txt => (txt, metric.distance(makeCharacterHistogramMap(txt), english)))
     distances.sortBy(_._2).head
   }
+
+  /**
+    * Construct all plaintext candidates using single character XOR using given keyspace
+    */
+  def singleCharacterCandidates(cipher: Array[Byte], keyspace: Array[Byte]) =
+    keyspace map ( k => (k, singleCharacterXOR(cipher, k)))
+
 }

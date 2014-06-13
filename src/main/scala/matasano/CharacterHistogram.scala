@@ -49,4 +49,15 @@ object CharacterHistogram {
   def makeCharacterHistogramMap(s: String): Map[Char, Double] =
     normalizeCount(characterCount(s), s.length)
 
+  /**
+    * Convenience function for scoring for English
+    * TODO: might figure better organization for Metric and CharacterHistogram files
+    */
+  def scoreEnglish(txt: String) = {
+    import matasano.Metric
+    val trial = makeCharacterHistogramMap(txt)
+    val metric = new ChiSquare[Char]
+    metric.distance(trial, english)
+  }
+
 }

@@ -21,6 +21,7 @@ package matasano
 object Challenge3 {
 
   import CharacterHistogram._
+  import Conversions._
 
   def main(args: Array[String]) = {
 
@@ -28,9 +29,18 @@ object Challenge3 {
     val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
     val cipher = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     val plain = XOR.breakSingleCharacterXOR(cipher, keyCandidates, new ChiSquare[Char])
-    val plain_str = plain._1
+    val plainStr = plain._1
 
-    println(plain_str)
+    println(plainStr)
+    val keyspace = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString.getBytes
+    val cipher2 = decodeHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+
+    val plaintextCandidates = XOR.singleCharacterCandidates(cipher2, keyspace)
+    val scores = plaintextCandidates map ( { case (k, c) => (k, scoreEnglish(new String(c))) } )
+
+    
+
+    print(plaintext)
 
   }
 }

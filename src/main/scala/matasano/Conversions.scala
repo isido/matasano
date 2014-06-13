@@ -33,10 +33,10 @@ object Conversions {
     Hex.decodeHex(s.toLowerCase.toArray.map(i => i))
 
   /**
-    * Conversions to bytes
+    * Conversion to bytes
+    * TODO: is this really necessary, or should we be explicit everywhere
     */
-  implicit def StringToBytes(s: String) : Array[Byte] = s.getBytes
-  implicit def CharToBytes(c: Char) : Byte = c.byteValue
+  implicit def CharToBytes(c: Char) : Byte = c.toByte
 
 }
 

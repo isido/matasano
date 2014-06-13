@@ -20,7 +20,7 @@ class XORSuite extends FunSuite {
 
   test("FixedXOR hex string, result in string (Challenge #1)") {
     for ((x1, x2, res) <- xors)
-      assert(encodeHex(XOR.fixedXOR(x1, x2)) === res)
+      assert(encodeHex(XOR.fixedXOR(decodeHex(x1), decodeHex(x2))) === res)
   }
 
   val singleCharacterXORs =
@@ -41,21 +41,16 @@ class XORSuite extends FunSuite {
 
   test("SingleCharacterXOR, result in string") {
     for ((x, c, res) <- singleCharacterCharXORs)
-      assert(XOR.singleCharacterXOR(x, c) === res)
+      assert(encodeHex(XOR.singleCharacterXOR(decodeHex(x), c)) === res)
   }
   test("RepeatKey (bytes)") {
     assert(XOR.repeatKey(Array[Byte](1,2,3,4,5), Array[Byte](1)) === Array[Byte](1,1,1,1,1))
     assert(XOR.repeatKey(Array[Byte](1,2,3,4,5), Array[Byte](1,2)) === Array[Byte](1,2,1,2,1))
   }
 
-  test("RepeatKey (strings)") {
-    assert(XOR.repeatKey("abcde", "a") === "aaaaa")
-    assert(XOR.repeatKey("abcde", "ab") === "ababa")
-  }
-
-  test("RepeatingKeyXOR (Challenge #5)") {
+  test("RepeatingKey XOR (Challenge #5)") {
     assert(Tools.encodeHex(
-      XOR.repeatingKeyXOR("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal", "ICE")) === 
+      XOR.repeatingKey("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal".getBytes, "ICE".getBytes)) === 
       "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
   }
 }
