@@ -20,7 +20,7 @@ package matasano
 
 object Challenge7 {
 
-  import Tools._
+  import Conversions._
 
   import javax.crypto.Cipher
   import javax.crypto.spec.SecretKeySpec

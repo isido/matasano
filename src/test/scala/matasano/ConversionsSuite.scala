@@ -3,7 +3,7 @@ package matasano
 import org.scalatest.FunSuite
 
 
-class ToolsSuite extends FunSuite {
+class ConversionsSuite extends FunSuite {
 
   val hexAndBytes =
     Array(

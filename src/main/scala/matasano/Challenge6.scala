@@ -27,7 +27,7 @@ object Challenge6 {
     // (say) 40.
 
     val maxKeysize = 40
-    val keysize = 2 to maxKeysize
+    val keysizes = 2 to maxKeysize
 
     // b. Write a function to compute the edit distance/Hamming distance
     // between two strings
@@ -37,9 +37,12 @@ object Challenge6 {
     // them. Normalize this result by dividing by KEYSIZE.
 
     val distances = for {
-      i <- keysize
-      editDistance = distance(bytes.slice(0, i), bytes.slice(i, i * 2))
-      normEditDistance = editDistance / i.toDouble
+      i <- keysizes
+      ed1 = distance(bytes.slice(0, i), bytes.slice(i * 2, i * 3))
+      ed2 = distance(bytes.slice(i, i * 2), bytes.slice(i * 3, i * 4))
+      ed3 = distance(bytes.slice(i * 4, i * 5), bytes.slice(i * 5, i * 6))
+      ed = (ed1 + ed2 + ed3) / 3.0
+      normEditDistance = ed / i.toDouble
     } yield (i, normEditDistance)
 
     // d. The KEYSIZE with the smallest normalized edit distance is probably
@@ -47,12 +50,16 @@ object Challenge6 {
     // values. Or take 4 KEYSIZE blocks instead of 2 and average the
     // distances.
 
-    val k = distances.sortBy(_._2).head._1
-
+    val sorted = distances.sortBy( { case (ks, d) => d} )
+    val (ks, i) = sorted.head
+/*    for {
+      (kks, ii) <- sorted
+    } println(kks, ii)
+ */
     // e. Now that you probably know the KEYSIZE: break the ciphertext into
     // blocks of KEYSIZE length.
 
-    val blocks = bytes.sliding(k, k).toArray
+    val blocks = bytes.sliding(ks, ks).toArray
 
     // f. Now transpose the blocks: make a block that is the first byte of
     // every block, and a block that is the second byte of every block, and
@@ -61,7 +68,7 @@ object Challenge6 {
     // drop last block, if the division is not even
 
     val transposed = 
-      if (blocks.last.length != k)
+      if (blocks.last.length != ks)
         blocks.take(blocks.length - 1).transpose
       else
         blocks.transpose
@@ -69,16 +76,19 @@ object Challenge6 {
     // g. Solve each block as if it was single-character XOR. You already
     // have code to do this.
 
-    import CharacterHistogram._
-    val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
-
-    //val keyChars = transposed map (block => XOR.findSingleCharacterXORkey(block, keyCandidates, new ChiSquare[Char]))
-
+    val keyspace = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ ('!' to '=')).mkString.getBytes
+    val key = for {
+      block <- transposed
+      (k, _) = XOR.singleCharacterKeyCandidates(block, keyspace).head
+    } yield k
 
     // e. For each block, the single-byte XOR key that produces the best
     // looking histogram is the repeating-key XOR key byte for that
     // block. Put them together and you have the key.
-    
+
+    println("Key: " + new String(key))
+    println("Plaintext: " +  new String(XOR.repeatingKey(bytes, key)))
+ 
   }
 }
 
