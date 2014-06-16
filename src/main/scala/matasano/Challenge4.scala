@@ -19,19 +19,22 @@ object Challenge4 {
 
   def main(args: Array[String]) = {
 
+    import Conversions.decodeHex
+
     // assume keys are ASCII letters
-    val keyCandidates = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString
-
-
+    val keyspace = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')).mkString.getBytes
     val filename = "single-character-xor.txt" // the contents of url are copied here
-    val cipherTexts = Source.fromURL(getClass.getResource("/" + filename)).getLines
+    val ctxts = Source.fromURL(getClass.getResource("/" + filename)).getLines
 
-    val distances = cipherTexts map ( txt => XOR.breakSingleCharacterXOR(txt, 
-      keyCandidates, new ChiSquare[Char]))
+    val candidates = for {
+      hexTxt <- ctxts
+      txt = decodeHex(hexTxt)
+      (k, d) <- XOR.singleCharacterKeyCandidates(txt, keyspace)
+    } yield (txt, k, d)
 
-    val first = distances.toList.sortBy(_._2).head._1
+    val sorted = candidates.toList.sortBy( { case (txt, k, d) => d } )
+    val (ciphertext, key, _) = sorted.head
 
-    println(first)
-
+    println(new String(XOR.singleCharacterXOR(ciphertext, key)))
   }
 }
