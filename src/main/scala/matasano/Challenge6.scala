@@ -76,7 +76,8 @@ object Challenge6 {
     // g. Solve each block as if it was single-character XOR. You already
     // have code to do this.
 
-    val keyspace = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ ('!' to '=')).mkString.getBytes
+    // try most printable ascii characters (scala typing required some trickery)
+    val keyspace: Array[Byte] = for { i <- (32 to 127).toArray } yield i.toByte
     val key = for {
       block <- transposed
       (k, _) = XOR.singleCharacterKeyCandidates(block, keyspace).head
