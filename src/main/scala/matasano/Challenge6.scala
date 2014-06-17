@@ -38,6 +38,7 @@ object Challenge6 {
 
     val distances = for {
       i <- keysizes
+      // this feels a bit hackish
       ed1 = distance(bytes.slice(0, i), bytes.slice(i * 2, i * 3))
       ed2 = distance(bytes.slice(i, i * 2), bytes.slice(i * 3, i * 4))
       ed3 = distance(bytes.slice(i * 4, i * 5), bytes.slice(i * 5, i * 6))
@@ -52,10 +53,7 @@ object Challenge6 {
 
     val sorted = distances.sortBy( { case (ks, d) => d} )
     val (ks, i) = sorted.head
-/*    for {
-      (kks, ii) <- sorted
-    } println(kks, ii)
- */
+
     // e. Now that you probably know the KEYSIZE: break the ciphertext into
     // blocks of KEYSIZE length.
 
