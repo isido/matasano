@@ -89,6 +89,10 @@ object Challenge6 {
 
     println("Key: " + new String(key))
     println("Plaintext: " +  new String(XOR.repeatingKey(bytes, key)))
+
+    val newKey = key.slice(0, key.length - 1) ++ Array('e'.toByte)
+    println("Corrected key: " + new String(newKey))
+    println("Corrected plaintext: " + new String(XOR.repeatingKey(bytes, newKey)))
  
   }
 }
