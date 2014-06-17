@@ -4,6 +4,7 @@ object Hamming {
 
   /**
     * Count number of set bits
+    * This method expects "unsigned" int
     */
   def bits(a: Int): Int = {
     def bitsAcc(a: Int, acc: Int): Int =
@@ -14,8 +15,10 @@ object Hamming {
 
   /**
     * Count number of differing bits in two bytes
+    * (a & 0xff) trickery is needed because JVM has no unsigned byte type,
+    * it converts signed bytes into unsigned ints equivalent of unsigned bytes (argh)
     */
-  def differingBits(a: Byte, b: Byte): Int = bits (a ^ b)
+  def differingBits(a: Byte, b: Byte): Int = bits ((a & 0xff) ^ (b & 0xff))
 
   /**
     * Count hamming distance (number of different bits) in two byte arrays
