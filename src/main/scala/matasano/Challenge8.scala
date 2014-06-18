@@ -23,38 +23,31 @@ object Challenge8 {
 
   def hammingByBlock(bytes: Array[Byte], window: Int) = {
     val blocks = makeBlocks(bytes, window)
-    val basis = blocks(0) // TODO: fix this
-    val distances = blocks.map { b => 0 }.sum // figure out why this isn't working
-    distances / blocks.length.toDouble
+    blocks.map { basis => blocks.map { b => distance(basis, b) }.sum / blocks.length.toDouble }.sum / blocks.length.toDouble
   }
 
   def main(args: Array[String]) = {
 
     val cipherTexts = 
-      for {
+      (for {
         line <- Source.fromURL(getClass.getResource("/detect-aes-ecb.txt")).getLines
-      } yield decodeHex(line)
+      } yield decodeHex(line)).toArray
 
-    val cipherTexts2: Array[Array[Byte]] = cipherTexts.toArray
-    
-    val txt1 = cipherTexts2(0)
-    println("t" + txt1.toSeq)
-    val bl1 = txt1.slice(0,16)
-    val bl2 = txt1.slice(16,32)
+    // blocksize might be a multiple of 8
+    val blocksizes = Array(8, 16, 24, 32, 48, 52, 64)
 
-    println("b1" + bl1.toSeq)
-    println("b2" + bl2.toSeq)
-    println("b1l" + bl1.length)
-    println("b2l" + bl2.length)
-    val d = distance(bl1, bl2)
+    for (bs <- blocksizes) {
 
-    println(d)
-     
-    val index = for {
-      ct <- cipherTexts
-    } yield hammingByBlock(ct, 16)
+      val differences = for {
+        ct <- cipherTexts
+      } yield hammingByBlock(ct, bs)
 
-    println(index.toArray.mkString)
-    
+      val sorted = differences.zipWithIndex.sortBy( { case (d, i) => d } )
+
+      println("With blocksize " + bs)
+      println(sorted.take(5).mkString("\t"))
+
+      // text 132 seems to be the one
+    }
   }
 }
