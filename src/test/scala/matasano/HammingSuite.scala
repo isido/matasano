@@ -15,7 +15,7 @@ class HammingSuite extends FunSuite {
 
   val hammings2 = Array(
     (Array[Byte](0,0,0,0), Array[Byte](1,1,1,1), 4),
-    (Array[Byte](-1,-1,-1,-1), Array[Byte](1,1,1,1), 4)
+    (Array[Byte](-1,-1,-1,-1), Array[Byte](1,1,1,1), 28)
     //(Array[Byte](-118, 16, 36, 127, -112, -48, -96, 85, 56, -120, -118, -42, 32, 88, -126, 25),
     //  Array[Byte](111, 95, 109, 5, -62, 30, -56, -36, -96, -53, 11, -32, 44, 63, -117, 9), 0)
   )
