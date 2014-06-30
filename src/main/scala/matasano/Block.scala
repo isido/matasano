@@ -18,13 +18,24 @@ object Block {
       b
   }
 
-  /**
-    * PKCS#7 Padding
-    */
   def pkcs7(a: Array[Byte], s: Int): Array[Byte] = {
     val diff = s - a.length
     a ++  Array.fill(diff)(diff.toByte)
   }
+
+  def randomBytes(s: Int): Array[Byte] = {
+    var b = Array.fill[Byte](s)(0)
+    new scala.util.Random().nextBytes(b)
+    b
+  }
+
+  def encryptionOracle(in: Array[Byte]) = {
+    val modes = Array(new CBC, new CBC)
+    val mode = modes(new scala.util.Random().nextInt(modes.length))
+    in
+  }
+
+
 }
 
 class CBC extends Block {
