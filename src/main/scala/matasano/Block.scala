@@ -1,24 +1,9 @@
 package matasano
 
 abstract class Block {
-
-  def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher);
-
+  def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher): Array[Byte] = pt
+  def decrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher): Array[Byte] = pt
 }
-
-class CBC extends Block {
-
-  import XOR.fixedXOR
-
-  def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
-    assert(iv.length == key.length)
-    val padded = Block.pkcs7(pt, key.length)
-    val blocks = padded.sliding(key.length, key.length).toArray
-    blocks(0)
-//    blocks.foldLeft(iv)(block, rest) => (cipher.encrypt(fixedXOR(block, rest), key))
-  }
-}
-
 
 object Block {
 
@@ -32,11 +17,37 @@ object Block {
     else
       b
   }
+
   /**
     * PKCS#7 Padding
     */
   def pkcs7(a: Array[Byte], s: Int): Array[Byte] = {
     val diff = s - a.length
     a ++  Array.fill(diff)(diff.toByte)
+  }
+}
+
+class CBC extends Block {
+
+  import XOR.fixedXOR
+  import Cipher.CipherOp
+
+  override def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
+    assert(iv.length == key.length)
+    val padded = Block.pkcs7(pt, key.length)
+    val blocks = padded.sliding(key.length, key.length).toArray
+    val out = blocks.foldLeft(Array(iv))((acc, cur) => acc :+ cipher.encrypt(fixedXOR(acc.last, cur), key))
+    out.drop(1).flatten // drop the iv from the result
+  }
+
+  override def decrypt(ct: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
+    assert(iv.length == key.length)
+    assert(ct.length % key.length == 0)
+    val blocks = iv +: ct.sliding(key.length, key.length).toArray // add iv as first "ct" block
+    // TODO: make this more readable
+    // tuple: (plaintext-block, previous-ct-block)
+    val out = blocks.foldLeft(Array((Array[Byte](), iv)))((acc, cur) => acc :+ (fixedXOR(cipher.decrypt(cur, key), acc.last._2), cur))
+    val res = out.map(_._1)
+    res.drop(2).flatten // drop the fold-initial and iv from the result
   }
 }

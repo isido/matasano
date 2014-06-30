@@ -1,8 +1,9 @@
 package matasano
 
-/**
-  * Do simple ECB de/encryption
-  */
+object Cipher {
+  type CipherOp = (Array[Byte], Array[Byte]) => Array[Byte]
+}
+
 abstract class Cipher {
 
   def decrypt(bytes: Array[Byte], key: Array[Byte]): Array[Byte];
@@ -27,3 +28,4 @@ class AES extends Cipher {
     engine.doFinal(bytes)
   }
 }
+
