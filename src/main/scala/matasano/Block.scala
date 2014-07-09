@@ -18,9 +18,18 @@ object Block {
       b
   }
 
-  def pkcs7(a: Array[Byte], s: Int): Array[Byte] = {
-    val diff = s - a.length
-    a ++  Array.fill(diff)(diff.toByte)
+  def pkcs7(a: Array[Byte], blocksize: Int): Array[Byte] = {
+    assert(blocksize < 256)
+    val padding = 
+      if (a.length < blocksize)
+        blocksize - a.length
+      else
+        a.length % blocksize
+
+    if (padding != 0)
+      a ++  Array.fill(padding)(padding.toByte)
+    else
+      a ++ Array.fill(blocksize)(blocksize.toByte)
   }
 
   def randomBytes(s: Int): Array[Byte] = {
