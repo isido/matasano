@@ -18,7 +18,7 @@ object Block {
       b
   }
 
-  def pkcs7(a: Array[Byte], blocksize: Int): Array[Byte] = {
+  def pkcs7Pad(a: Array[Byte], blocksize: Int): Array[Byte] = {
     assert(blocksize < 256)
     val padding = 
       if (a.length < blocksize)
@@ -38,13 +38,33 @@ object Block {
     b
   }
 
-  def encryptionOracle(in: Array[Byte]) = {
-    val modes = Array(new CBC, new CBC)
+  def encryptionOracle(pt: Array[Byte]) = {
+    val modes = Array(new ECB, new CBC)
     val mode = modes(new scala.util.Random().nextInt(modes.length))
-    in
+    val n1 = new scala.util.Random().nextInt(6) + 5
+    val n2 = new scala.util.Random().nextInt(6) + 5
+    val before = Array.fill(n1)(0.toByte)
+    val after = Array.fill(n2)(0.toByte)
+    val tampered = before ++ pt ++ after
+    val key = randomBytes(16)
+    val ct = mode.encrypt(tampered, key, key, new AES)
+    ct
+
   }
 
 
+}
+
+class ECB extends Block {
+  override def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
+    val padded = Block.pkcs7Pad(pt, key.length)
+    val blocks = padded.sliding(key.length, key.length).toArray
+    val out = blocks.map( block => cipher.encrypt(block, key) )
+    out.flatten
+  }
+  override def decrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
+    pt // not implemented
+  }
 }
 
 class CBC extends Block {
@@ -54,7 +74,7 @@ class CBC extends Block {
 
   override def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
     assert(iv.length == key.length)
-    val padded = Block.pkcs7(pt, key.length)
+    val padded = Block.pkcs7Pad(pt, key.length)
     val blocks = padded.sliding(key.length, key.length).toArray
     val out = blocks.foldLeft(Array(iv))((acc, cur) => acc :+ cipher.encrypt(fixedXOR(acc.last, cur), key))
     out.drop(1).flatten // drop the iv from the result
@@ -69,5 +89,6 @@ class CBC extends Block {
     val out = blocks.foldLeft(Array((Array[Byte](), iv)))((acc, cur) => acc :+ (fixedXOR(cipher.decrypt(cur, key), acc.last._2), cur))
     val res = out.map(_._1)
     res.drop(2).flatten // drop the fold-initial and iv from the result
+    // TODO: remove padding
   }
 }
