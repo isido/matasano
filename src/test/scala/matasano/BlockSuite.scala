@@ -2,6 +2,9 @@ package matasano
 
 import org.scalatest.FunSuite
 
+import org.scalacheck._
+import Prop.forAll
+
 import matasano.Block._
 
 class BlockSuite extends FunSuite {

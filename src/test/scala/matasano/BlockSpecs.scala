@@ -1,13 +1,19 @@
 package matasano
 
 import org.scalacheck._
-import Prop.forAll
+import Prop.BooleanOperators // not working for some reason :|
+import Prop._
 
 import matasano.Block._
+ 
+object BlockSpecs extends Properties("Block") {
 
-class BlockSpecs extends Properties("Block") {
+  val arrayGen = Gen.containerOf[Array, Byte](0.toByte)
+  val intGen = Gen.choose(1, 255)
 
-  property("dummy") = forAll { a: Int => a == a }
-  property("dummy2") = forAll { a: Int => a != a }
-
+  property("pkcs7Pad") = Prop.forAllNoShrink(arrayGen, intGen) { (a, b) => 
+    val padded = pkcs7Pad(a, b)
+    (a.length != padded.length) :| "Padding is not added" && 
+    ((a.length >= b) && (padded.length % b == 0))
+  }
 }

@@ -19,7 +19,7 @@ object Block {
   }
 
   def pkcs7Pad(a: Array[Byte], blocksize: Int): Array[Byte] = {
-    assert(blocksize < 256)
+    assert(blocksize < 256 && blocksize > 0)
     val padding = 
       if (a.length < blocksize)
         blocksize - a.length
