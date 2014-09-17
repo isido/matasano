@@ -1,6 +1,7 @@
 package matasano
 
 abstract class Block {
+  val mode : Symbol
   def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher): Array[Byte] = pt
   def decrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher): Array[Byte] = pt
 }
@@ -38,24 +39,35 @@ object Block {
     b
   }
 
-  def encryptionOracle(pt: Array[Byte]) = {
+  def encryptionOracle(pt: Array[Byte], blocksize: Int) = {
+
+    def padding = {
+      val i = (((pt.size / blocksize + 1) * blocksize) - pt.size)
+      val n1 = i / 2
+      val n2 = 
+        if ((i % 2) == 0)
+          n1
+        else
+          n1 + 1
+      (n1, n2)
+    }
+
+    assert (blocksize % 2 == 0)
+    val (n1, n2) = padding
     val modes = Array(new ECB, new CBC)
     val mode = modes(new scala.util.Random().nextInt(modes.length))
-    val n1 = new scala.util.Random().nextInt(6) + 5
-    val n2 = new scala.util.Random().nextInt(6) + 5
+    println(mode.mode)
     val before = Array.fill(n1)(0.toByte)
     val after = Array.fill(n2)(0.toByte)
     val tampered = before ++ pt ++ after
-    val key = randomBytes(16)
+    val key = randomBytes(blocksize)
     val ct = mode.encrypt(tampered, key, key, new AES)
     ct
-
   }
-
-
 }
 
 class ECB extends Block {
+  override val mode = 'ECB
   override def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
     val padded = Block.pkcs7Pad(pt, key.length)
     val blocks = padded.sliding(key.length, key.length).toArray
@@ -71,6 +83,8 @@ class CBC extends Block {
 
   import XOR.fixedXOR
   import Cipher.CipherOp
+
+  override val mode = 'CBC
 
   override def encrypt(pt: Array[Byte], iv: Array[Byte], key: Array[Byte], cipher: Cipher) = {
     assert(iv.length == key.length)
