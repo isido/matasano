@@ -38,32 +38,6 @@ object Block {
     new scala.util.Random().nextBytes(b)
     b
   }
-
-  def encryptionOracle(pt: Array[Byte], blocksize: Int) = {
-
-    def padding = {
-      val i = (((pt.size / blocksize + 1) * blocksize) - pt.size)
-      val n1 = i / 2
-      val n2 = 
-        if ((i % 2) == 0)
-          n1
-        else
-          n1 + 1
-      (n1, n2)
-    }
-
-    assert (blocksize % 2 == 0)
-    val (n1, n2) = padding
-    val modes = Array(new ECB, new CBC)
-    val mode = modes(new scala.util.Random().nextInt(modes.length))
-    println(mode.mode)
-    val before = Array.fill(n1)(0.toByte)
-    val after = Array.fill(n2)(0.toByte)
-    val tampered = before ++ pt ++ after
-    val key = randomBytes(blocksize)
-    val ct = mode.encrypt(tampered, key, key, new AES)
-    ct
-  }
 }
 
 class ECB extends Block {
