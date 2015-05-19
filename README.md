@@ -1,4 +1,4 @@
 Matasano Crypto Challenges
 ==========================
 
-These are my solutions of Matasano Crypto Challenges (http://cryptopals.com).
+Here are some solutions to Matasano Crypto Challenges (http://cryptopals.com) written in Scala.
